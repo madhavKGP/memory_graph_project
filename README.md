@@ -8,6 +8,29 @@ Repository: https://github.com/madhavKGP/memory_graph_project
 
 ---
 
+# Table of Contents
+
+- [Project Overview](#project-overview)
+- [Example Interface](#example-interface)
+- [Dataset](#dataset)
+- [Installation](#installation)
+- [Requirements](#requirements)
+- [Environment Variables](#environment-variables)
+- [Running the Project](#running-the-project)
+  - [Test the Pipeline](#1-test-the-pipeline-5-emails)
+  - [Build Memory Graph](#2-build-memory-graph-100-emails)
+  - [Run the UI](#3-run-the-ui)
+- [Project Structure](#project-structure)
+- [File Responsibilities](#file-responsibilities)
+- [Thought Process](#thought-process)
+- [Key Challenges](#key-challenges)
+- [Technologies Used](#technologies-used)
+- [Future Improvements](#future-improvements)
+- [Conclusion](#conclusion)
+- [License](#license)
+
+---
+
 # Project Overview
 
 The system processes raw emails and builds a knowledge graph that supports **semantic retrieval and reasoning**.
