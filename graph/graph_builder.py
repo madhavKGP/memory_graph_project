@@ -16,14 +16,28 @@ class MemoryGraph:
 
     def add_entity(self, entity):
 
+        if not entity:
+            return
+
+        name = entity.get("name")
+        entity_type = entity.get("type", "Entity")
+
+        if not name:
+            return
+
         # normalize + canonicalize
-        entity_name = normalize_entity(entity["name"])
-        entity = canonicalize_entity(
-            {"name": entity_name, "type": entity["type"]}
-        )
+        name = normalize_entity(name)
+
+        entity = canonicalize_entity({
+            "name": name,
+            "type": entity_type
+        })
 
         name = entity["name"]
         entity_type = entity["type"]
+
+        if not name:
+            return
 
         if not self.graph.has_node(name):
 
@@ -34,7 +48,13 @@ class MemoryGraph:
 
     def ensure_node(self, name, default_type="Concept"):
 
+        if not name:
+            return None
+
         name = normalize_entity(name)
+
+        if not name:
+            return None
 
         if not self.graph.has_node(name):
 
@@ -51,15 +71,25 @@ class MemoryGraph:
 
     def add_claim(self, claim):
 
-        subject = normalize_entity(claim["subject"])
-        relation = normalize_relation(claim["relation"])
-        obj = normalize_entity(claim["object"])
+        if not claim:
+            return
 
-        evidence = claim["evidence"]
+        subject = normalize_entity(claim.get("subject"))
+        relation = normalize_relation(claim.get("relation"))
+        obj = normalize_entity(claim.get("object"))
+        evidence = claim.get("evidence")
+
+        # ---- VALIDATION ----
+        if not subject or not relation or not obj:
+            print("Skipping invalid claim:", claim)
+            return
 
         # Ensure nodes exist
         subject = self.ensure_node(subject)
         obj = self.ensure_node(obj)
+
+        if not subject or not obj:
+            return
 
         # -------------------------
         # EDGE DEDUPLICATION
@@ -81,7 +111,7 @@ class MemoryGraph:
             subject,
             obj,
             relation=relation,
-            evidence=[evidence]
+            evidence=[evidence] if evidence else []
         )
 
     # -------------------------
@@ -90,10 +120,16 @@ class MemoryGraph:
 
     def add_extraction(self, extraction):
 
-        for entity in extraction["entities"]:
+        if not extraction:
+            return
+
+        entities = extraction.get("entities", [])
+        claims = extraction.get("claims", [])
+
+        for entity in entities:
             self.add_entity(entity)
 
-        for claim in extraction["claims"]:
+        for claim in claims:
             self.add_claim(claim)
 
     # -------------------------

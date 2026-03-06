@@ -1,4 +1,3 @@
-from sentence_transformers import SentenceTransformer
 import numpy as np
 import faiss
 
@@ -6,6 +5,9 @@ import faiss
 class ClaimVectorIndex:
 
     def __init__(self):
+
+        # Lazy import so Streamlit startup stays fast
+        from sentence_transformers import SentenceTransformer
 
         self.model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -15,13 +17,19 @@ class ClaimVectorIndex:
         self.claims = []
         self.metadata = []
 
+    # ---------------------------------
+    # Add claims to vector index
+    # ---------------------------------
+
     def add_claim(self, subject, relation, obj, evidence):
 
         text = f"{subject} {relation} {obj}"
 
-        embedding = self.model.encode([text])[0]
+        embedding = self.model.encode(text)
 
-        self.index.add(np.array([embedding]).astype("float32"))
+        embedding = np.array([embedding]).astype("float32")
+
+        self.index.add(embedding)
 
         self.claims.append(text)
 
@@ -32,13 +40,20 @@ class ClaimVectorIndex:
             "evidence": evidence
         })
 
-    def search(self, query, k=5):
+    # ---------------------------------
+    # Semantic search
+    # ---------------------------------
 
-        embedding = self.model.encode([query])[0]
+    def search(self, query, top_k=5):
 
-        distances, indices = self.index.search(
-            np.array([embedding]).astype("float32"), k
-        )
+        if len(self.metadata) == 0:
+            return []
+
+        embedding = self.model.encode(query)
+
+        embedding = np.array([embedding]).astype("float32")
+
+        distances, indices = self.index.search(embedding, top_k)
 
         results = []
 

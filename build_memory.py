@@ -4,18 +4,25 @@ from extraction.extractor import extract_from_email
 from graph.graph_builder import MemoryGraph
 from retrieval.vector_index import ClaimVectorIndex
 
+print("SCRIPT STARTED")
+
 CSV_PATH = r"D:\python\memory_graph_project\emails.csv"
 
 
 def build_memory():
 
-    emails = load_emails(CSV_PATH)
+    print("Loading emails...")
+
+    # limit emails to avoid massive runtime
+    emails = load_emails(CSV_PATH, limit=100)
 
     graph = MemoryGraph()
 
     print("Processing emails...")
 
     for i, email in enumerate(emails):
+
+        print(f"Processing email {i}")
 
         extraction = extract_from_email(email)
 
@@ -25,9 +32,19 @@ def build_memory():
         if i % 100 == 0:
             print("Processed", i, "emails")
 
+        # checkpoint
+        if i % 2000 == 0 and i != 0:
+
+            with open("memory_graph_partial.pkl", "wb") as f:
+                pickle.dump(graph.graph, f)
+
+            print("Checkpoint saved at", i)
+
     print("Building vector index...")
 
+    print("Initializing embedding model...")
     vector_index = ClaimVectorIndex()
+    print("Embedding model ready")
 
     for u, v, data in graph.graph.edges(data=True):
 
