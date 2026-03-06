@@ -19,13 +19,13 @@ def main():
 
     for email in emails:
 
-        # print("\n====================")
-        # print("EMAIL SUBJECT:", email["subject"])
+        print("\n====================")
+        print("EMAIL SUBJECT:", email["subject"])
 
         extraction = extract_from_email(email)
 
-        # print("\nExtraction Result:")
-        # print(extraction)
+        print("\nExtraction Result:")
+        print(extraction)
 
         if extraction:
             graph.add_extraction(extraction)
