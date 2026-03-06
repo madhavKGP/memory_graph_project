@@ -1,0 +1,5 @@
+.venv
+emails.csv
+.env
+.venv/
+__pycache__/
